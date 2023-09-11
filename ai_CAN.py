@@ -28,4 +28,19 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     word : str
         The word chosen by the AI for the next guess.
     """
+
+    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
+
+    # Create a list of length 5 representing the amount of possible letters that a given space could have
+    # We will remove letters from these alphabet strings as we make guesses
+    lettersPerWord = []
+    for i in range(5):
+        lettersPerWord.append(ALPHABET)
+
+    return lettersPerWord
     
+def main():
+    makeguess()
+
+if __name__ == "__main__":
+    main()
