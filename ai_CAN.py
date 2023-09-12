@@ -32,13 +32,32 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
 
     # Create a list of length 5 representing the amount of possible letters that a given space could have
-    # We will remove letters from these alphabet strings as we make guesses
+    #   - We will remove letters from ALL these alphabet strings if not in the word
+    #   - We will remove letters from the spot they were in but not the others if yellow
+    #   - We will remove all but the letter and that letter from the other alphabet strings if green
     lettersPerWord = []
     for i in range(5):
         lettersPerWord.append(ALPHABET)
 
-    return lettersPerWord
+    print(lettersPerWord)
+
+    # Test out removing letters from 
+    word = 'WORLD'
     
+    # Looping through each of the 5 letter spots
+    for i in range(5):
+        # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
+        if feedback[i] == 2:
+            lettersPerWord[i] = word[i]
+        # If almost correct (in the word but not the correct spot), remove from list at that spot
+        elif feedback[i] == 1:
+            lettersPerWord[i].replace(word[i], "")
+        # If incorrect, remove the wrong letter from all possible letter lists
+        else:
+            lettersPerWord = [list.replace(word[i], "") for list in lettersPerWord]
+
+
+
 def main():
     makeguess()
 
