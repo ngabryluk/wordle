@@ -28,6 +28,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     word : str
         The word chosen by the AI for the next guess.
     """
+    wordlist = [j for j in wordlist if j != '']
     
 
     # These two words contain the 10 most commonly used letters in the English language
@@ -35,6 +36,10 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     if len(guesses) == 0:
         wordlist = utils.readwords("allwords5.txt")
         return 'STAIN'
+    else:
+        # Remove previous guesses from the wordlist so they aren't picked multiple times 
+        for word in guesses:
+            wordlist.remove(word)
     
     # If the first word had no correct letters, hard-code another word
     if len(guesses) == 1 and feedback[len(feedback) - 1] == [0, 0, 0, 0, 0]:
@@ -47,10 +52,10 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     #   - We will remove letters from ALL these alphabet strings if not in the word
     #   - We will remove letters from the spot they were in but not the others if yellow
     #   - We will remove all but the letter in the spot but not the others if green
-    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
-    lettersPerWord = []
-    for i in range(5):
-        lettersPerWord.append(ALPHABET)
+    # ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
+    # lettersPerWord = []
+    # for i in range(5):
+    #     lettersPerWord.append(ALPHABET)
 
 
     # Test out removing letters from 
@@ -60,17 +65,17 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # Update the possible letters that could be in each spot
 
     # Looping through each of the 5 letter spots in the word
-    for i in range(5):
-        # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
-        # Keep in mind this doesn't remove it from other possible spots
-        if last_feedback[i] == 2:
-            lettersPerWord[i] = last_guess[i]
-        # If almost correct (in the word but not the correct spot), remove from list at that spot
-        elif last_feedback[i] == 1:
-            lettersPerWord[i] = lettersPerWord[i].replace(last_guess[i], "")
-        # If incorrect, remove the wrong letter from all possible letter lists
-        else:
-            lettersPerWord = [list.replace(last_guess[i], "") for list in lettersPerWord]
+    # for i in range(5):
+    #     # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
+    #     # Keep in mind this doesn't remove it from other possible spots
+    #     if last_feedback[i] == 2:
+    #         lettersPerWord[i] = last_guess[i]
+    #     # If almost correct (in the word but not the correct spot), remove from list at that spot
+    #     elif last_feedback[i] == 1:
+    #         lettersPerWord[i] = lettersPerWord[i].replace(last_guess[i], "")
+    #     # If incorrect, remove the wrong letter from all possible letter lists
+    #     else:
+    #         lettersPerWord = [list.replace(last_guess[i], "") for list in lettersPerWord]
             
     # Filter down the wordlist based on the updated possible letters
 
@@ -82,7 +87,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     #     for i in range(5):
     #         correctSpots.append(feedback[len(feedback) - 2][i] == 2)
     
-    pdb.set_trace()
+    
     # Loop through each letter spot
     for i in range(5):
 
@@ -106,7 +111,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
     # Make a random guess from the remaining possible words
     guess = random.choice(wordlist)
-    pdb.set_trace()
+    wordlist = utils.readwords("allwords5.txt")
     return guess
 
 
