@@ -29,19 +29,23 @@ def makeguess(wordlist, guesses=[], feedback=[]):
         The word chosen by the AI for the next guess.
     """
 
-    print(guesses)
-    print(feedback)
+    last_guess = guesses[len(guesses) - 1]
+    last_feedback = str(feedback[len(feedback) - 1][0])
 
+    # These two words contain the 10 most commonly used letters in the English language
     # If it's the first guess, return a hard-coded first word
     if len(guesses) == 0:
         return 'STAIN'
+    # If the first word had no correct letters, hard-code another word
+    elif len(guesses) == 1 and last_feedback == '00000':
+        return 'CEORL'
 
-    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
-
+    
     # Create a list of length 5 representing the amount of possible letters that a given space could have
     #   - We will remove letters from ALL these alphabet strings if not in the word
     #   - We will remove letters from the spot they were in but not the others if yellow
-    #   - We will remove all but the letter and that letter from the other alphabet strings if green
+    #   - We will remove all but the letter in the spot but not the others if green
+    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # valid letters to guess
     lettersPerWord = []
     for i in range(5):
         lettersPerWord.append(ALPHABET)
@@ -50,15 +54,13 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # Test out removing letters from 
     # word = 'WORLD'
     # feedback = '20010'
-
-    last_guess = guesses[len(guesses) - 1]
-    last_feedback = str(feedback[len(feedback) - 1][0])
     
     # Update the possible letters that could be in each spot
 
     # Looping through each of the 5 letter spots in the word
     for i in range(5):
         # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
+        # Keep in mind this doesn't remove it from other possible spots
         if int(last_feedback[i]) == 2:
             lettersPerWord[i] = last_guess[i]
         # If almost correct (in the word but not the correct spot), remove from list at that spot
@@ -84,12 +86,18 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # Loop through each letter spot
     for i in range(5):
 
+        # If the spot is already correct and filtered down OR the guess in this spot was incorrect, move on
+        # There is no filtering needed in these cases
+        if correctSpots[i] or last_feedback[i] == 0:
+            continue
+
         # If the letter in this spot is correct...
         if int(last_feedback[i]) == 2:
             # Remove all words that don't have the correct letter in this spot
             for word in wordlist:
                 if last_guess[i] != word[i]:
                     wordlist.remove(word)
+            correctSpots[i] = True # Update the flag for the current spot
         
         # If the letter in this spot is almost correct...
         elif int(last_feedback[i]) == 1:
@@ -98,7 +106,6 @@ def makeguess(wordlist, guesses=[], feedback=[]):
                 if last_guess[i] == word[i]:
                     wordlist.remove(word)
 
-        # Check every word in the wordlist and 
 
     # Make a random guess from the remaining possible words
     return random.choice(wordlist)
