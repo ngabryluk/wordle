@@ -28,6 +28,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     word : str
         The word chosen by the AI for the next guess.
     """
+    
     wordlist = [j for j in wordlist if j != '']
     
 
@@ -57,42 +58,44 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     for i in range(5):
         lettersPerWord.append(ALPHABET)
 
-    almostCorrect = [] # Keep a list of almost correct letters to make sure that they are always in the next guess
     # Test out removing letters from 
     # word = 'WORLD'
     # feedback = '20010'
 
     # Update the possible letters that could be in each spot
 
-    # Looping through each of the 5 letter spots in the word
-    for i in range(5):
-        # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
-        # Keep in mind this doesn't remove it from other possible spots
-        if last_feedback[i] == 2:
-            lettersPerWord[i] = last_guess[i]
-        # If almost correct (in the word but not the correct spot), remove from list at that spot
-        elif last_feedback[i] == 1:
-            lettersPerWord[i] = lettersPerWord[i].replace(last_guess[i], "")
-            almostCorrect.append(last_guess[i]) # Add to almost correct letter list
-        # If incorrect, remove the wrong letter from all possible letter lists
-        else:
-            # There is a case where if a letter appears twice in the secret word and one of those letters
-            # has been correctly guessed but not the other; what happened before is that we would remove 
-            # that letter from all the lettersPerWord strings, which includes the string that has the only
-            # correct letter in it, breaking the algorithm.
+    # Looping through each of the 5 letter spots in every guess
+    for guess in range(len(guesses)):
+        
+        # Loop through the 5 letters in each of guess
+        for i in range(5):
+            # If correct make the possible letters list at that spot just the letter (Because it's the correct one)
+            # Keep in mind this doesn't remove it from other possible spots
+            if feedback[guess][i] == 2:
+                lettersPerWord[i] = guesses[guess][i]
+            # If almost correct (in the word but not the correct spot), remove from list at that spot
+            elif feedback[guess][i] == 1:
+                lettersPerWord[i] = lettersPerWord[i].replace(guesses[guess][i], "")
 
-            # Solution: Check if letter has already been guessed correctly in another spot by checking if
-            # it is the only char in another spot. If it is, only remove it as a possibility in the current spot.
-            # If not, it's not in the word so remove it from all possible spots
-            alreadyInWord = False
-            for group in lettersPerWord:
-                if len(group) == 1 and group[0] == last_guess[i]:
-                    lettersPerWord[i] = lettersPerWord[i].replace(last_guess[i], "")
-                    alreadyInWord = True
-                    break
+            # If incorrect, remove the wrong letter from all possible letter lists
+            else:
+                # There is a case where if a letter appears twice in the secret word and one of those letters
+                # has been correctly guessed but not the other; what happened before is that we would remove 
+                # that letter from all the lettersPerWord strings, which includes the string that has the only
+                # correct letter in it, breaking the algorithm.
 
-            if not alreadyInWord:
-                lettersPerWord = [list.replace(last_guess[i], "") for list in lettersPerWord]
+                # Solution: Check if letter has already been guessed correctly in another spot by checking if
+                # it is the only char in another spot. If it is, only remove it as a possibility in the current spot.
+                # If not, it's not in the word so remove it from all possible spots
+                alreadyInWord = False
+                for group in lettersPerWord:
+                    if len(group) == 1 and group[0] == guesses[guess][i]:
+                        lettersPerWord[i] = lettersPerWord[i].replace(guesses[guess][i], "")
+                        alreadyInWord = True
+                        break
+
+                if not alreadyInWord:
+                    lettersPerWord = [list.replace(guesses[guess][i], "") for list in lettersPerWord]
         
             
     # Filter down the wordlist based on the updated possible letters
@@ -109,53 +112,46 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     # Loop through each letter spot
     for i in range(5):
 
-        # If there is only one possible letter, that is the letter
-        if len(lettersPerWord[i]) == 1:
-            for j in range(len(wordlist)):
-                if lettersPerWord[i][0] != wordlist[j][i]:
-                    wordlist[j] = ''
-            wordlist = [j for j in wordlist if j != '']
-        
-        elif len(lettersPerWord[i]) > 1:
-            for j in range(len(wordlist)):
-                # If the letter in the current spot is not in the list of possible letters, remove the word
-                if wordlist[j][i] not in lettersPerWord[i]:
-                    wordlist[j] = ''
-            wordlist = [j for j in wordlist if j != '']
+        possible_letters = lettersPerWord[i]
 
-        # If the letter in this spot is correct...
-        # if last_feedback[i] == 2:
-            # Remove all words that don't have the correct letter in this spot
-            
-            # correctSpots[i] = True # Update the flag for the current spot
-        
-        # If the letter in this spot is almost correct...
-        # elif last_feedback[i] == 1:
-        #     # Get rid of every word that has a letter in this spot
-        #     for j in range(len(wordlist)):
-        #         if last_guess[i] == wordlist[j][i]:
-        #             wordlist[j] = ''
-        #     wordlist = [j for j in wordlist if j != '']
-       
+        if len(possible_letters) == 1:
+            letter = possible_letters[0]
+            wordlist = [word for word in wordlist if word[i] == letter]
+
+        elif len(possible_letters) > 1:
+            wordlist = [word for word in wordlist if word[i] in possible_letters]       
 
     # Make a random guess from the remaining possible words
+    while True:
+        guess = random.choice(wordlist)
 
-    guess = random.choice(wordlist)
-    allYellowsInGuess = False # Flag determining whether or not all the yellow letters are in the guess
-    while not allYellowsInGuess:
-        invalidGuess = False # Flag to help break the for loop and continue the while loop
-        # Loop through each of the yellow letters
-        for letter in almostCorrect:
-            # pdb.set_trace()
-            if letter not in guess:
-                guess = random.choice(wordlist)
-                invalidGuess = True
+        validGuess = True
+
+        for i in range(len(guess)):
+            if guess[i] not in lettersPerWord[i]:
+                validGuess = False
                 break
-        
-        if invalidGuess:
-            continue
 
-        allYellowsInGuess = True # If we make it to this point, the word has all the previous yellow letters
+        if validGuess: 
+            break
+
+    # allYellowsInGuess = False # Flag determining whether or not all the yellow letters are in the guess
+    # while not allYellowsInGuess:
+    #     invalidGuess = False # Flag to help break the for loop and continue the while loop
+    #     # Loop through each of the yellow letters
+    #     for letter in almostCorrect:
+    #         # pdb.set_trace()
+    #         if letter not in guess:
+    #             guess = random.choice(wordlist)
+    #             invalidGuess = True
+    #             break
+        
+    #     if invalidGuess:
+    #         continue
+
+    #     allYellowsInGuess = True # If we make it to this point, the word has all the previous yellow letters
+    
+    
     wordlist = utils.readwords("allwords5.txt")
     return guess
 
