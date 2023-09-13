@@ -93,6 +93,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
 
             if not alreadyInWord:
                 lettersPerWord = [list.replace(last_guess[i], "") for list in lettersPerWord]
+        
             
     # Filter down the wordlist based on the updated possible letters
 
@@ -145,6 +146,7 @@ def makeguess(wordlist, guesses=[], feedback=[]):
         invalidGuess = False # Flag to help break the for loop and continue the while loop
         # Loop through each of the yellow letters
         for letter in almostCorrect:
+            # pdb.set_trace()
             if letter not in guess:
                 guess = random.choice(wordlist)
                 invalidGuess = True
