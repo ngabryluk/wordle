@@ -147,7 +147,9 @@ def makeguess(wordlist, guesses=[], feedback=[]):
             wordlist = [word for word in wordlist if word[spot] != letter]
 
     # From here filter by the words that still contain the yellow letters
-    wordlist = [word for word in wordlist if set(yellowLetters.keys()).issubset(set(word))]
+    for letter in yellowLetters:
+        wordlist = [word for word in wordlist if letter in word]
+
 
     # print(wordlist)
     # pdb.set_trace()
