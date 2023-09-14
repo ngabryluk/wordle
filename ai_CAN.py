@@ -39,19 +39,6 @@ def makeguess(wordlist, guesses=[], feedback=[]):
     if len(guesses) == 2:
         return 'UMPED'
     
-    # # These two words contain the 10 most commonly used letters in the English language
-    # # If it's the first guess, return a hard-coded first word
-    # if len(guesses) == 0:
-    #     wordlist = utils.readwords("allwords5.txt")
-    #     return 'STAIN'
-    # else:
-    #     # Remove previous guesses from the wordlist so they aren't picked multiple times 
-    #     for word in guesses:
-    #         wordlist.remove(word)
-    
-    # # If the first word had no correct letters, hard-code another word
-    # if len(guesses) == 1 and feedback[len(feedback) - 1] == [0, 0, 0, 0, 0]:
-    #     return 'CEORL'
     
     # Create a list of length 5 representing the amount of possible letters that a given space could have
     #   - We will remove letters from ALL these alphabet strings if not in the word
